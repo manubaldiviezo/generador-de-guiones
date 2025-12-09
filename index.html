@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MANU | Ad Script Architect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* MANU BRAND */
+            --brand: #FF4400;
+            --brand-glow: rgba(255, 68, 0, 0.2);
+            --bg-page: #0A0A0C;
+            --bg-panel: #131316;
+            --bg-input: #1C1C21;
+            --border: #2D2D33;
+            --text-main: #FFFFFF;
+            --text-muted: #888899;
+            
+            /* UI ACCENTS */
+            --accent-blue: #3B82F6; /* Para estructura lógica */
+            --accent-purple: #8B5CF6; /* Para estructura emocional */
+            --accent-green: #10B981; /* Para estructura oferta */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER */
+        header {
+            padding: 1.5rem 5%;
+            border-bottom: 1px solid var(--border);
+            background: rgba(19, 19, 22, 0.9);
+            backdrop-filter: blur(10px);
+            position: sticky; top: 0; z-index: 50;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .logo { font-family: 'Space Grotesk', sans-serif; font-size: 1.4rem; font-weight: 700; letter-spacing: -0.5px; }
+        .logo span { color: var(--brand); }
+        .tagline { font-size: 0.75rem; color: var(--text-muted); background: #222; padding: 4px 10px; border-radius: 20px; font-weight: 500; }
+
+        /* LAYOUT */
+        .container {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            flex: 1;
+            height: calc(100vh - 80px);
+        }
+
+        /* LEFT: INPUTS */
+        .sidebar {
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border);
+            padding: 2.5rem;
+            overflow-y: auto;
+            display: flex; flex-direction: column; gap: 2rem;
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif; font-size: 1rem; color: var(--brand); text-transform: uppercase; margin-bottom: 1.5rem; letter-spacing: 1px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .form-group { margin-bottom: 1.5rem; }
+        
+        label { display: block; font-size: 0.85rem; font-weight: 500; color: var(--text-muted); margin-bottom: 8px; }
+        
+        input, textarea, select {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 14px;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif; font-size: 0.95rem;
+            transition: 0.2s;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--brand); background: #25252b;
+        }
+
+        textarea { resize: vertical; min-height: 80px; }
+
+        .btn-generate {
+            background: var(--brand); color: #fff; border: none; padding: 16px; width: 100%; border-radius: 8px;
+            font-weight: 700; font-family: 'Space Grotesk'; text-transform: uppercase; cursor: pointer; margin-top: 1rem;
+            transition: 0.3s;
+        }
+        .btn-generate:hover { background: #ff5519; box-shadow: 0 0 20px var(--brand-glow); }
+
+        /* RIGHT: OUTPUTS */
+        .output-area {
+            padding: 3rem;
+            overflow-y: auto;
+            background: radial-gradient(circle at top left, #1a0f0f, var(--bg-page));
+        }
+
+        .welcome-state {
+            text-align: center; margin-top: 100px; color: var(--text-muted);
+        }
+
+        .script-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;
+            display: none; /* Hidden by default */
+        }
+
+        .script-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.2s;
+        }
+        .script-card:hover { transform: translateY(-5px); border-color: #444; }
+
+        /* Color accents for cards */
+        .card-header { padding: 1.5rem; border-bottom: 1px solid var(--border); }
+        .sc-logical .card-header { background: linear-gradient(90deg, rgba(59, 130, 246, 0.1), transparent); border-left: 4px solid var(--accent-blue); }
+        .sc-emotional .card-header { background: linear-gradient(90deg, rgba(139, 92, 246, 0.1), transparent); border-left: 4px solid var(--accent-purple); }
+        .sc-viral .card-header { background: linear-gradient(90deg, rgba(16, 185, 129, 0.1), transparent); border-left: 4px solid var(--accent-green); }
+
+        .sc-title { font-family: 'Space Grotesk'; font-weight: 700; font-size: 1.1rem; margin-bottom: 5px; color: #fff; }
+        .sc-tag { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+        .card-body { padding: 1.5rem; font-size: 0.95rem; line-height: 1.6; color: #ddd; }
+        
+        .script-part { margin-bottom: 1.2rem; }
+        .part-label { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 4px; }
+        .part-text { display: block; }
+
+        .copy-btn {
+            background: transparent; border: 1px solid var(--border); color: var(--text-muted);
+            width: 100%; padding: 10px; border-radius: 0 0 12px 12px; cursor: pointer; font-size: 0.8rem; font-weight: 600;
+            transition: 0.2s;
+        }
+        .copy-btn:hover { background: #222; color: #fff; }
+
+        @media (max-width: 900px) {
+            .container { grid-template-columns: 1fr; }
+            .sidebar { height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">MANU <span>/ SCRIPT ARCHITECT</span></div>
+    <div class="tagline">Generador de Guiones de Alta Conversión</div>
+</header>
+
+<div class="container">
+    
+    <div class="sidebar">
+        <div class="section-title">🛠️ Ingredientes del Anuncio</div>
+        
+        <div class="form-group">
+            <label>1. Nombre de tu Producto/Servicio</label>
+            <input type="text" id="product" placeholder="Ej. Curso de Inglés, Tenis Ergonómicos...">
+        </div>
+
+        <div class="form-group">
+            <label>2. Cliente Ideal (Avatar)</label>
+            <input type="text" id="avatar" placeholder="Ej. Profesionales ocupados, Corredores...">
+        </div>
+
+        <div class="form-group">
+            <label>3. Dolor Principal (Problema)</label>
+            <textarea id="pain" placeholder="Ej. No tener tiempo para estudiar, dolor de rodilla al correr..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>4. Deseo / Solución (Resultado)</label>
+            <textarea id="desire" placeholder="Ej. Hablar fluido en 3 meses, correr maratones sin dolor..."></textarea>
+        </div>
+
+        <button class="btn-generate" onclick="generateScripts()">Generar Guiones</button>
+    </div>
+
+    <div class="output-area">
+        
+        <div id="welcome-msg" class="welcome-state">
+            <h3>Tu hoja en blanco termina aquí.</h3>
+            <p>Completa los datos a la izquierda para generar 3 ángulos de venta.</p>
+        </div>
+
+        <div id="results-grid" class="script-grid">
+            
+            <div class="script-card sc-logical">
+                <div class="card-header">
+                    <div class="sc-title">El "Identificador de Problema"</div>
+                    <div class="sc-tag">Estructura P.A.S. (Ideal para Tráfico Frío)</div>
+                </div>
+                <div class="card-body" id="script-1">
+                    </div>
+                <button class="copy-btn" onclick="copyToClipboard('script-1')">COPIAR GUION</button>
+            </div>
+
+            <div class="script-card sc-emotional">
+                <div class="card-header">
+                    <div class="sc-title">El "Deseo Inmediato"</div>
+                    <div class="sc-tag">Estructura Deseo/Beneficio (Ideal para Retargeting)</div>
+                </div>
+                <div class="card-body" id="script-2">
+                    </div>
+                <button class="copy-btn" onclick="copyToClipboard('script-2')">COPIAR GUION</button>
+            </div>
+
+            <div class="script-card sc-viral">
+                <div class="card-header">
+                    <div class="sc-title">El "Anti-Método" (Viral)</div>
+                    <div class="sc-tag">Estructura Disruptiva (Ideal para TikTok/Reels)</div>
+                </div>
+                <div class="card-body" id="script-3">
+                    </div>
+                <button class="copy-btn" onclick="copyToClipboard('script-3')">COPIAR GUION</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function generateScripts() {
+        // 1. Get Inputs
+        const product = document.getElementById('product').value.trim() || "[PRODUCTO]";
+        const avatar = document.getElementById('avatar').value.trim() || "[AVATAR]";
+        const pain = document.getElementById('pain').value.trim() || "[DOLOR]";
+        const desire = document.getElementById('desire').value.trim() || "[DESEO]";
+
+        // 2. Hide Welcome, Show Grid
+        document.getElementById('welcome-msg').style.display = 'none';
+        const grid = document.getElementById('results-grid');
+        grid.style.display = 'grid';
+
+        // 3. Generate Script 1: PAS (Problema - Agitación - Solución)
+        const html1 = `
+            <div class="script-part">
+                <span class="part-label">📸 ESCENA 1 (Gancho Visual: Persona frustrada)</span>
+                <span class="part-text">"¿Eres ${avatar} y estás harto de ${pain}?"</span>
+            </div>
+            <div class="script-part">
+                <span class="part-label">😰 ESCENA 2 (Agitación: Hacer que duela)</span>
+                <span class="part-text">"Sé lo que se siente. Intentas solucionarlo, pero nada funciona y sigues estancado."</span>
+            </div>
+            <div class="script-part">
+                <span class="part-label">💡 ESCENA 3 (Solución: Presentar el producto)</span>
+                <span class="part-text">"Por eso creamos <strong>${product}</strong>. La nueva forma de lograr ${desire} sin complicaciones."</span>
+            </div>
+            <div class="script-part">
+                <span class="part-label">👉 ESCENA 4 (CTA: Llamado a la acción)</span>
+                <span class="part-text">"Haz clic abajo y descubre cómo funciona."</span>
+            </div>
+        `;
+        document.getElementById('script-1').innerHTML = html1;
+
+        // 4. Generate Script 2: Desire/Benefit (Directo al grano)
+        const html2 = `
+            <div class="script-part">
+                <span class="part-label">😲 ESCENA 1 (Gancho: Promesa Audaz)</span>
+                <span class="part-text">"Imagínate poder ${desire} en tiempo récord..."</span>
+            </div>
+            <div class="script-part">
+                <span class="part-label">🤔 ESCENA 2 (Manejo de objeción)</span>
+                <span class="part-text">"Y no, no necesitas ser un experto ni sufrir por ${pain}."</span>
+            </div>
+            <div class="script-part">
+                <span class="part-label">🚀 ESCENA 3 (Prueba/Mecanismo)</span>
+                <span class="part-text">"Con <strong>${product}</strong>, hemos ayudado a cientos de ${avatar} a conseguir resultados reales."</span>
+            </div>
+            <div class="script-part">
+                <span class="part-label">👉 ESCENA 4 (CTA)</span>
+                <span class="part-text">"Toca el botón y mira la demostración gratuita."</span>
+            </div>
+        `;
+        document.getElementById('script-2').innerHTML = html2;
+
+        // 5. Generate Script 3: The "Anti" (Viral/Negative Hook)
+        const html3 = `
+            <div class="script-part">
+                <span class="part-label">🛑 ESCENA 1 (Pattern Interrupt: ¡Detente!)</span>
+                <span class="part-text">"¡Deja de intentar solucionar ${pain} de la forma antigua!"</span>
+            </div>
+            <div class="script-part">
+                <span class="part-label">📉 ESCENA 2 (La verdad incómoda)</span>
+                <span class="part-text">"La mayoría de ${avatar} fallan porque se enfocan en lo incorrecto. No es tu culpa."</span>
+            </div>
+            <div class="script-part">
+                <span class="part-label">✨ ESCENA 3 (La revelación)</span>
+                <span class="part-text">"El secreto para realmente ${desire} está en una nueva metodología que usamos en <strong>${product}</strong>."</span>
+            </div>
+            <div class="script-part">
+                <span class="part-label">👉 ESCENA 4 (CTA Suave)</span>
+                <span class="part-text">"¿Quieres saber cuál es? Te lo explico en el link de mi perfil."</span>
+            </div>
+        `;
+        document.getElementById('script-3').innerHTML = html3;
+    }
+
+    function copyToClipboard(elementId) {
+        // Logic to extract text and copy
+        const node = document.getElementById(elementId);
+        let textToCopy = "";
+        
+        // Loop through parts to get clean text
+        const parts = node.querySelectorAll('.script-part');
+        parts.forEach(part => {
+            const label = part.querySelector('.part-label').innerText;
+            const text = part.querySelector('.part-text').innerText;
+            textToCopy += `${label}\n${text}\n\n`;
+        });
+
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            alert("¡Guion copiado al portapapeles!");
+        });
+    }
+</script>
+
+</body>
+</html>
